@@ -1,8 +1,6 @@
 const Photo = require("../models/Photo");
 const User = require("../models/User");
 
-const cloudinary = require("../config/cloudinary");
-
 const { mongoose } = require("mongoose");
 
 const fs = require("fs");
