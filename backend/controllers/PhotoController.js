@@ -23,8 +23,6 @@ const insertPhoto = async (req, res) => {
     image,
     title,
     userId: user._id,
-    userName: user.name,
-    userImage: user.profileImage,
   });
 
   // If user was photo sucessfully, return data
@@ -90,6 +88,7 @@ const deletePhoto = async (req, res) => {
 const getAllPhotos = async (req, res) => {
   const photo = await Photo.find({})
     .sort([["createdAt", -1]])
+    .populate("userId", ["name", "profileImage"])
     .exec();
 
   return res.status(200).json(photo);
@@ -100,6 +99,7 @@ const getUserPhotos = async (req, res) => {
 
   try {
     const photo = await Photo.find({ userId: id })
+      .populate("userId", "name profileImage")
       .sort([["createdAt", -1]])
       .exec();
 
@@ -119,7 +119,9 @@ const getPhotoById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const photo = await Photo.findById(new mongoose.Types.ObjectId(id));
+    const photo = await Photo.findById(
+      new mongoose.Types.ObjectId(id)
+    ).populate("userId", "name profileImage");
 
     // Check if photo  exist
     if (!photo) {
@@ -229,8 +231,10 @@ const commentPhoto = async (req, res) => {
 
     const user = await User.findById(reqUser._id);
 
-    const photo = await Photo.findById(id);
-
+    const photo = await Photo.findById(id).populate(
+      "userId",
+      "name profileImage"
+    );
     // Check if photo  exist
     if (!photo) {
       res.status(404).json({ errors: ["Foto não encontrada"] });
@@ -268,7 +272,9 @@ const commentPhoto = async (req, res) => {
 const searchPhotos = async (req, res) => {
   const { q } = req.query;
 
-  const photos = await Photo.find({ title: new RegExp(q, "i") }).exec();
+  const photos = await Photo.find({ title: new RegExp(q, "i") })
+    .populate("userId", "name profileImage")
+    .exec();
 
   res.status(200).json(photos);
 };
@@ -281,6 +287,7 @@ const getAllComments = async (req, res) => {
 
     const photos = await Photo.find()
       .sort([["createdAt", -1]])
+      .populate("userId", "name profileImage")
       .exec();
 
     const userComments = photos.flatMap((photo) =>
