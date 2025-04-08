@@ -1,39 +1,46 @@
 const Photo = require("../models/Photo");
 const User = require("../models/User");
 
+const cloudinary = require("../config/cloudinary");
+
 const { mongoose } = require("mongoose");
 
 const fs = require("fs");
 
-// Insert a photo, with an user related to it
+const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
+
 const insertPhoto = async (req, res) => {
   const { title } = req.body;
-  const image = req.file.filename;
-
-  console.log(req.body);
-
   const reqUser = req.user;
 
   const user = await User.findById(reqUser._id);
 
-  console.log(user.name);
+  try {
+    // Upload para o Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(req.file.path);
 
-  // Create photo
-  const newPhoto = await Photo.create({
-    image,
-    title,
-    userId: user._id,
-  });
+    // Apaga o arquivo local (opcional)
+    fs.unlinkSync(req.file.path);
 
-  // If user was photo sucessfully, return data
-  if (!newPhoto) {
-    res.status(422).json({
-      errors: ["Houve um erro, por favor tente novamente mais tarde."],
+    // Cria a imagem com a URL do Cloudinary
+    const newPhoto = await Photo.create({
+      image: uploadResult.secure_url,
+      title,
+      userId: user._id,
     });
-    return;
-  }
 
-  res.status(201).json(newPhoto);
+    if (!newPhoto) {
+      return res.status(422).json({
+        errors: ["Houve um erro, por favor tente novamente mais tarde."],
+      });
+    }
+
+    res.status(201).json(newPhoto);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ errors: ["Erro ao fazer upload da imagem."] });
+  }
 };
 
 // Remove a photo from DB
