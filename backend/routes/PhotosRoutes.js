@@ -8,14 +8,14 @@ const { insertPhoto, deletePhoto, getAllPhotos, getUserPhotos, getPhotoById, upd
 const { photoInsertValidation, photoUpdateValidation, photoCommentValidation } = require("../middlewares/photoValidation")
 const authGuard = require("../middlewares/authGuard");
 const validate  = require("../middlewares/handleValidation");
-const { upload } = require("../middlewares/cloudinaryUpload");
+const { imageUpload } = require("../middlewares/imageUpload");
 
 //routes
 // POST
 router.post(
   "/",
   authGuard,
-  upload.single("image"),
+  imageUpload.single("image"),
   photoInsertValidation(),
   validate,
   insertPhoto
