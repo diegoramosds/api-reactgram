@@ -6,41 +6,31 @@ const { mongoose } = require("mongoose");
 const fs = require("fs");
 
 const cloudinary = require("../config/cloudinary");
-const fs = require("fs");
 
 const insertPhoto = async (req, res) => {
   const { title } = req.body;
-  const reqUser = req.user;
+  const user = req.user;
 
-  const user = await User.findById(reqUser._id);
+  // Verifica se veio uma imagem
+  if (!req.file) {
+    return res.status(422).json({ errors: ["A imagem é obrigatória!"] });
+  }
+
+  // A URL da imagem já vem de req.file.path, graças ao CloudinaryStorage
+  const imageUrl = req.file.path;
 
   try {
-    // Upload para o Cloudinary
-    const uploadResult = await cloudinary.uploader.upload(req.file.path);
-
-    // Apaga o arquivo local (opcional)
-    fs.unlinkSync(req.file.path);
-
-    // Cria a imagem com a URL do Cloudinary
-    const newPhoto = await Photo.create({
-      image: uploadResult.secure_url,
+    const photo = await Photo.create({
+      image: imageUrl,
       title,
       userId: user._id,
     });
 
-    if (!newPhoto) {
-      return res.status(422).json({
-        errors: ["Houve um erro, por favor tente novamente mais tarde."],
-      });
-    }
-
-    res.status(201).json(newPhoto);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ errors: ["Erro ao fazer upload da imagem."] });
+    res.status(201).json(photo);
+  } catch (error) {
+    res.status(500).json({ errors: ["Erro ao criar a foto."] });
   }
 };
-
 // Remove a photo from DB
 const deletePhoto = async (req, res) => {
   const { id } = req.params;
@@ -78,7 +68,7 @@ const deletePhoto = async (req, res) => {
     // Remove the photo from all users' likedPhotos
     await User.updateMany(
       { "likedPhotos.photoId": photo._id }, // Find users who liked the photo
-      { $pull: { likedPhotos: { photoId: photo._id } } } // Remove the photo from likedPhotos
+      { $pull: { likedPhotos: { photoId: photo._id } } }
     );
     res
       .status(200)
