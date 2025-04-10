@@ -4,7 +4,7 @@ const express = require("express")
 const path = require("path")
 const cors = require("cors")
 
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 const app = express()
 
@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
 //Solve cors
-app.use(cors({credentials: true, origin: "https://react-gram-swart.vercel.app"}))
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 
 //Upload directory
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")))
