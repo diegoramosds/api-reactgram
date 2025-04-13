@@ -37,6 +37,62 @@ Utilizando **Node.js**, **Express** e **MongoDB com Mongoose**, a API fornece to
 
 ---
 
+## 🚀 Como Rodar o Projeto
+
+### 🔧 **Pré-requisitos**  
+
+Antes de começar, certifique-se de ter instalado:  
+
+✅ **Node.js** (versão 18 ou superior) → [Baixar aqui](https://nodejs.org/)  
+
+✅ **Gerenciador de pacotes** (npm ou yarn)  
+
+✅ **Git** (para clonar o repositório)  
+
+---  
+
+<br>  
+
+
+## ▶️ Passo a Passo  
+
+### 🛠 **Executando a API**  
+
+1️⃣ **Clone o repositório**:  
+```bash
+git clone https://github.com/diegoramosds/api-reactgram.git
+
+```
+
+2️⃣ **Acesse o diretório da API** no terminal.
+```bash
+cd backend
+```
+
+3️⃣ Execute para instalar as dependências do projeto.
+```bash
+npm install
+```
+
+4️⃣ Crie um arquivo .env na raiz do projeto com as variáveis de ambiente necessárias:
+```bash
+PORT=5000
+DB_USER=seu_usuario_mongodb
+DB_PASS=sua_senha_mongodb
+JWT_SECRET=sua_chave_secreta
+
+CLOUDINARY_CLOUD_NAME=seu_cloud_name
+CLOUDINARY_API_KEY=sua_api_key
+CLOUDINARY_API_SECRET=sua_api_secret
+```
+
+5️⃣ Execute para iniciar o servidor da API.
+```bash
+npm run server
+```
+
+6️⃣ Aguarde até que a API esteja rodando e ouvindo requisições na porta especificada.
+
 
 
 
